@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shayari-e-jaam</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        textarea {
+            width: 80%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        .poem {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px auto;
+            width: 80%;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add your shayare/poem</h1>
+    <textarea id="poemInput" placeholder="Write your poem here..."></textarea><br>
+    <button onclick="savePoem()">Submit</button>
+    <h2>Your Poems</h2>
+    <div id="poemContainer"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadPoems);
+        
+        function savePoem() {
+            let poemText = document.getElementById("poemInput").value.trim();
+            if (poemText === "") {
+                alert("Please enter a poem before submitting.");
+                return;
+            }
+            
+            let poems = JSON.parse(localStorage.getItem("poems")) || [];
+            poems.push(poemText);
+            localStorage.setItem("poems", JSON.stringify(poems));
+            
+            document.getElementById("poemInput").value = "";
+            loadPoems();
+        }
+        
+        function loadPoems() {
+            let poems = JSON.parse(localStorage.getItem("poems")) || [];
+            let container = document.getElementById("poemContainer");
+            container.innerHTML = "";
+            poems.forEach(poem => {
+                let div = document.createElement("div");
+                div.className = "poem";
+                div.textContent = poem;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
