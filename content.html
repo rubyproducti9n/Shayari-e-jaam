@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="script.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="content-item" data-title="Poem Title" data-content="This is a poem." data-type="Poem">
+        <h2>Poem Title</h2>
+        <p>This is a poem preview...</p>
+    </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const poemContent = document.getElementById("poem-content");
+    const poemId = localStorage.getItem("selectedPoemId"); // Get ID
+
+    if (poemId) {
+        db.collection("poems").doc(poemId).get().then((doc) => {
+            if (doc.exists) {
+                poemContent.innerHTML = `<h2>${doc.data().title}</h2><p>${doc.data().content}</p>`;
+            } else {
+                poemContent.innerHTML = "<p>Poem not found.</p>";
+            }
+        }).catch((error) => {
+            console.error("Error loading poem:", error);
+        });
+    } else {
+        poemContent.innerHTML = "<p>No poem selected.</p>";
+    }
+});
+
+
+        document.addEventListener("DOMContentLoaded", async function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const docId = urlParams.get("id");
+
+    if (docId) {
+        const docRef = doc(db, "poems", docId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            document.getElementById("contentTitle").innerText = docSnap.data().title;
+            document.getElementById("contentBody").innerText = docSnap.data().body;
+        } else {
+            document.getElementById("contentBody").innerText = "Content not found!";
+        }
+    }
+});
+
+
+        async function loadContent() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get("type");
+    const docId = urlParams.get("id");
+
+    if (!type || !docId) {
+        alert("Invalid content ID");
+        return;
+    }
+
+    const docRef = doc(db, type, docId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("title").innerText = data.title;
+        document.getElementById("content").innerText = data.content;
+    } else {
+        alert("Content not found");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", loadContent);
+
+    </script>
+</body>
+</html>

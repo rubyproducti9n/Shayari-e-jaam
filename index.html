@@ -1,65 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shayari-e-jaam</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        textarea {
-            width: 80%;
-            height: 150px;
-            margin-bottom: 10px;
-        }
-        .poem {
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 10px auto;
-            width: 80%;
-            background: #f9f9f9;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <script src="script.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writer's Haven</title>
+  <!-- Google Fonts for a classic writer feel -->
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Global styles */
+    body {
+      margin: 0;
+      font-family: 'Merriweather', serif;
+      background: #fdfdfd;
+      color: #333;
+      scroll-behavior: smooth;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    /* Navigation styles */
+    nav {
+      display: flex;
+      justify-content: center;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    nav ul li {
+      margin: 0 1rem;
+    }
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    nav ul li a:hover {
+      color: #f39c12;
+    }
+    /* Section styling */
+    section {
+      padding: 4rem 2rem;
+      border-bottom: 1px solid #eee;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+    .content {
+      max-width: 800px;
+      margin: auto;
+      line-height: 1.6;
+      font-size: 1.1rem;
+    }
+    /* Footer for Firebase status */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #333;
+      color: #fff;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        align-items: center;
+      }
+      nav ul li {
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Add your shayare/poem</h1>
-    <textarea id="poemInput" placeholder="Write your poem here..."></textarea><br>
-    <button onclick="savePoem()">Submit</button>
-    <h2>Your Poems</h2>
-    <div id="poemContainer"></div>
+  <!-- Header and Navigation -->
+  <header>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#articles">Articles</a></li>
+        <li><a href="#poems">Poems</a></li>
+        <li><a href="#shayri">Shayri</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", loadPoems);
+  <!-- Home Section -->
+  <section id="home">
+    <h2 class="section-title">Welcome to Writer's Haven</h2>
+    <div class="content">
+      <p>
+        This is a haven for creative souls. Dive into a curated collection of articles, heartfelt poems, and soulful shayri – all crafted to inspire and evoke emotion.
+      </p>
+    </div>
+  </section>
+
+  <!-- Articles Section -->
+  <section id="articles">
+    <h2 class="section-title">Articles</h2>
+    <div class="content">
+      <p>Discover thought-provoking articles and musings from our in-house writer.</p>
+    </div>
+  </section>
+
+  <!-- Poems Section (content loaded from Firebase) -->
+  <section id="poems">
+    <h2 class="section-title">Poems</h2>
+    <div class="content" id="poems-container">
+      <p>Loading poems...</p>
+    </div>
+  </section>
+
+  <!-- Shayri Section (content loaded from Firebase) -->
+  <section id="shayri">
+    <h2 class="section-title">Shayri</h2>
+    <div class="content" id="shayri-container">
+      <p>Loading shayri...</p>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <h2 class="section-title">About</h2>
+    <div class="content">
+      <p>
+        Writer's Haven was created for lovers of words and expression. Here, every piece is a story, and every story is an emotion. Join us on this literary journey.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer with Firebase connection status -->
+  <footer>
+    Firebase Status: <span id="firebase-status">Not connected</span>
+  </footer>
+
+  <!-- Firebase SDKs (using compat libraries for simplicity) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    // Replace these with your actual Firebase project configuration values.
+    const firebaseConfig = {
+      apiKey: "AIzaSyDWnKer23vPDtrMtk1LkhhDHZEzwyttMuE",
+      authDomain: "shayariii-d56c9.firebaseapp.com",
+      projectId: "shayariii-d56c9",
+      storageBucket: "shayariii-d56c9.firebasestorage.app",
+      messagingSenderId: "584432183873",
+      appId: "1:584432183873:web:87551486356050cd5ff4c0",
+      measurementId: "G-RT4T0963W7"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Update Firebase connection status
+    const statusElement = document.getElementById('firebase-status');
+    db.collection('test')
+      .get()
+      .then(() => {
+        statusElement.textContent = 'Connected';
+      })
+      .catch((error) => {
+        console.error("Firebase connection error:", error);
+        statusElement.textContent = 'Connection Failed';
+      });
+
+    // Function to fetch poems from Firestore
+    function loadPoems() {
+      const poemsContainer = document.getElementById('poems-container');
+      db.collection('poem')
+        .get()
+        .then((querySnapshot) => {
+          let html = '';
+          querySnapshot.forEach((doc) => {
+            const poem = doc.data();
+            html += `<div class="poem">
+                      <h3>${poem.title}</h3>
+                      <p>${poem.content}</p>
+                    </div>`;
+          });
+          poemsContainer.innerHTML = html || '<p>No poems found.</p>';
+        })
+        .catch((error) => {
+          poemsContainer.innerHTML = '<p>Error loading poems.</p>';
+          console.error("Error loading poems:", error);
+        });
+    }
+
+    // Function to fetch shayri from Firestore
+    function loadShayri() {
+      const shayriContainer = document.getElementById('shayri-container');
+      db.collection('shayari')
+        .get()
+        .then((querySnapshot) => {
+          let html = '';
+          querySnapshot.forEach((doc) => {
+            const shayri = doc.data();
+            html += `<div class="shayri">
+                      <h3>${shayri.title}</h3>
+                      <p>${shayri.content}</p>
+                    </div>`;
+          });
+          shayriContainer.innerHTML = html || '<p>No shayri found.</p>';
+        })
+        .catch((error) => {
+          shayriContainer.innerHTML = '<p>Error loading shayri.</p>';
+          console.error("Error loading shayri:", error);
+        });
+    }
+
+    // Load poems and shayri on page load
+    window.onload = function () {
+      loadPoems();
+      loadShayri();
+    };
+  </script>
+  <script>
+    // Function to handle clicking on a content item
+document.addEventListener("DOMContentLoaded", function () {
+    const contentItems = document.querySelectorAll(".content-item");
+    
+    contentItems.forEach(item => {
+        item.addEventListener("click", function () {
+            const title = this.getAttribute("data-title");
+            const content = this.getAttribute("data-content");
+            const type = this.getAttribute("data-type");
+            
+            // Store data in localStorage
+            localStorage.setItem("selectedContent", JSON.stringify({ title, content, type }));
+            
+            // Redirect to content.html
+            window.location.href = "content.html";
+        });
+    });
+});
+
+// Function to display content on content.html
+document.addEventListener("DOMContentLoaded", function () {
+    if (window.location.pathname.includes("content.html")) {
+        const contentData = JSON.parse(localStorage.getItem("selectedContent"));
         
-        function savePoem() {
-            let poemText = document.getElementById("poemInput").value.trim();
-            if (poemText === "") {
-                alert("Please enter a poem before submitting.");
-                return;
-            }
-            
-            let poems = JSON.parse(localStorage.getItem("poems")) || [];
-            poems.push(poemText);
-            localStorage.setItem("poems", JSON.stringify(poems));
-            
-            document.getElementById("poemInput").value = "";
-            loadPoems();
+        if (contentData) {
+            document.getElementById("content-title").innerText = contentData.title;
+            document.getElementById("content-body").innerText = contentData.content;
+            document.getElementById("content-type").innerText = contentData.type;
+        } else {
+            document.getElementById("content-title").innerText = "Content not found";
         }
-        
-        function loadPoems() {
-            let poems = JSON.parse(localStorage.getItem("poems")) || [];
-            let container = document.getElementById("poemContainer");
-            container.innerHTML = "";
-            poems.forEach(poem => {
-                let div = document.createElement("div");
-                div.className = "poem";
-                div.textContent = poem;
-                container.appendChild(div);
+    }
+});
+
+document.addEventListener("click", function (event) {
+    if (event.target.closest(".content-item")) {
+        const item = event.target.closest(".content-item");
+        const title = item.getAttribute("data-title");
+        const content = item.getAttribute("data-content");
+        const type = item.getAttribute("data-type");
+
+        localStorage.setItem("selectedContent", JSON.stringify({ title, content, type }));
+        window.location.href = "content.html";
+    }
+});
+
+
+function redirectToContent(type, docId) {
+    window.location.href = `content.html?type=${type}&id=${docId}`;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const poemsContainer = document.getElementById("poems-container");
+
+    db.collection("poems").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            let poemDiv = document.createElement("div");
+            poemDiv.classList.add("poem-entry");
+            poemDiv.innerHTML = `<h3>${doc.data().title}</h3>`;
+            poemDiv.dataset.id = doc.id; // Store the document ID
+
+            poemDiv.addEventListener("click", function () {
+                localStorage.setItem("selectedPoemId", doc.id); // Save ID
+                window.location.href = "content.html"; // Redirect
             });
-        }
-    </script>
+
+            poemsContainer.appendChild(poemDiv);
+        });
+    });
+});
+
+  </script>
+  <!-- <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDWnKer23vPDtrMtk1LkhhDHZEzwyttMuE",
+      authDomain: "shayariii-d56c9.firebaseapp.com",
+      projectId: "shayariii-d56c9",
+      storageBucket: "shayariii-d56c9.firebasestorage.app",
+      messagingSenderId: "584432183873",
+      appId: "1:584432183873:web:87551486356050cd5ff4c0",
+      measurementId: "G-RT4T0963W7"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script> -->
 </body>
 </html>
